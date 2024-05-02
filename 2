@@ -1,0 +1,67 @@
+# Define the input assembly code
+assembly_code = """
+START 100
+READ A
+READ B
+MOVER AREG, ='50'
+MOVER BREG, ='60'
+ADD AREG, BREG
+LOOP MOVER CREG, A
+ADD CREG, ='10'
+COMP CREG, B
+BC LT, LOOP
+NEXT SUB AREG, ='11'
+COMP AREG, B
+BC GT, NEXT
+STOP
+A DS 1
+B DS 1
+END
+"""
+
+# Define the instruction set
+instructions = {
+    'START': 0,
+    'READ': 1,
+    'MOVER': 2,
+    'ADD': 3,
+    'LOOP': 4,
+    'COMP': 5,
+    'BC': 6,
+    'SUB': 7,
+    'STOP': 8,
+    'A': 9,
+    'B': 10,
+    'END': 11
+}
+
+# Initialize Literal table
+literal_table = {}
+
+# Pass 1: Populate the Literal table
+lines = assembly_code.strip().split('\n')
+location_counter = 100  # Set the starting location counter to 100
+for line in lines:
+    tokens = line.split()
+    if tokens[0] in instructions:
+        if tokens[0] == 'START':
+            location_counter = int(tokens[1])
+        elif tokens[0] == 'END':
+            break
+        else:
+            for token in tokens[1:]:
+                if token.startswith("='") and token.endswith("'"):
+                    literal = token[2:-1]
+                    if literal not in literal_table:
+                        literal_table[literal] = location_counter
+    if tokens[0] not in ['START','READ','WAIT','CALL']:
+            location_counter+=1
+               
+
+# Print the Literal table
+print("Literal Table:")
+print("Literal\t|\tAddress")
+print("----------------------")
+for literal, address in literal_table.items():
+    print(f"{literal}\t|\t{address}")
+
