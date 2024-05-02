@@ -1,0 +1,62 @@
+//Assignment 1
+assembler = """
+START 180
+READ M
+READ N
+LOOP MOVER AREG, M
+MOVER BREG, N
+COMP BREG, ='200'
+BC GT, LOOP
+BACK SUB AREG, M
+COMP AREG, ='500'
+BC LT, BACK
+STOP
+M DS 1
+N DS 1
+"""
+
+instruction ={
+    'START':0,
+    'READ':1,
+    'LOOP':2,
+    'MOVER':3,
+    'COMP':4,
+    'BC':5,
+    'BACK':6,
+    'SUB':7,
+    'STOP':8,
+    'M':9,
+    'N':10,
+    'DS':11,
+    'END':12
+}
+
+symbol_table = {}
+
+lines = assembler.strip().split('\n')
+location_counter = 180
+for line in lines:
+    token = line.split()
+    if token[0] in instruction:
+        if token[0] == 'START':
+            location_counter = int(token[1])  #the second token (which should be the starting address) is converted to an integer using int() and assigned to the location_counter
+        elif token[0] in ['READ','MOVER','COMP','BC','SUB','STOP']:
+            location_counter +=1
+        elif token[0] == 'END':
+            break
+        elif token[1] == 'DS':
+            symbol_table[token[0]] = location_counter
+            location_counter+=int(token[2])
+        elif token[1] in ['READ','MOVER','COMP','BC','SUB','STOP']:
+            symbol_table[token[0]] = location_counter
+            location_counter+=1
+    else:
+        symbol_table[token[0]] = location_counter
+        location_counter+=1
+
+print("Symbol Table:")
+print("Symbol\t|\tAddress")
+print("------------------------")
+for symbol,address in symbol_table.items():
+    print(f"{symbol}\t|\t{address}")
+
